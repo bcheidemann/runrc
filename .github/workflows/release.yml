@@ -19,12 +19,15 @@ jobs:
           if ${VERSION_MAJOR} == true
           then
             echo "bump=major" >> $GITHUB_OUTPUT
+            echo "Bumping major version"
           else
             if ${VERSION_MINOR} == true
             then
               echo "bump=minor" >> $GITHUB_OUTPUT
+              echo "Bumping minor version"
             else
               echo "bump=patch" >> $GITHUB_OUTPUT
+              echo "Bumping patch version"
             fi
           fi
 
