@@ -1,0 +1,5 @@
+commands:
+  - name: Run CLI
+    alias: cli
+    run: |
+      deno run --allow-read --allow-run src/main.ts __@
