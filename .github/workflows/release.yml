@@ -35,3 +35,5 @@ jobs:
         uses: rymndhng/release-on-push-action@master
         with:
           bump_version_scheme: ${{ steps.bump-type.outputs.bump }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
