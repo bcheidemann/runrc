@@ -1,14 +1,13 @@
-on: 
-  push:
-    branches:
-      - main
+on:
+  pull_request:
+    types: [closed]
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'no-release')"
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    if: github.event.pull_request.merged
+
     steps:
       - name: Bump Type
         id: bump-type
