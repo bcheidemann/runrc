@@ -1,5 +1,5 @@
-
 import { chalk, path, YAML, zod } from "./deps.ts";
+import { template } from "./template.ts";
 
 class Config {
   public static runrc = path.join(Deno.cwd(), ".runrc");
@@ -20,7 +20,7 @@ const RunConfigSchema = zod.strictObject({
       name: zod.string(),
       runner: RunnerSchema.optional(),
       run: zod.string(),
-    })
+    }),
   ),
 });
 
@@ -65,15 +65,10 @@ export class RunConfig {
       return 1;
     }
 
-    // find all instances of __0, __1, etc and replace with the arguments
-    let run = command.run;
-    const args = Deno.args.slice(1);
-    for (let i = 0; i < args.length; i++) {
-      run = run.replace(`__${i}`, Deno.args[i]);
-    }
-
-    // replace all instances of __@ with the arguments
-    run = run.replace(/__@/g, args.join(" "));
+    // apply the template
+    const run = template({
+      resolveArgument: (index) => Deno.args[index],
+    })(command.run);
 
     // run the command
     const process = Deno.run({
@@ -97,8 +92,8 @@ export class RunConfig {
       console.log(
         chalk.bold("Runner: ") +
           chalk.italic(
-            [command.runner.command, ...command.runner.args].join(" ")
-          )
+            [command.runner.command, ...command.runner.args].join(" "),
+          ),
       );
       if (Deno.args.includes("--verbose") || Deno.args.includes("-v")) {
         console.log(chalk.bold("Run: "));
