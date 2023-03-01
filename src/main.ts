@@ -1,4 +1,3 @@
-
 // deno-lint-ignore-file no-fallthrough
 import { chalk } from "./deps.ts";
 import { error, RunConfig } from "./lib.ts";
