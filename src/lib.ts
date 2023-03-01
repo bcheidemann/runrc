@@ -67,7 +67,7 @@ export class RunConfig {
 
     // apply the template
     const run = template({
-      resolveArgument: (index) => Deno.args[index],
+      resolveArgument: (index) => Deno.args.at(index),
     })(command.run);
 
     // run the command
