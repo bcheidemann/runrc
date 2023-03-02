@@ -1,4 +1,5 @@
-import { chalk, path, YAML, zod } from "./deps.ts";
+import { chalk, path, Result, YAML, zod, zodError } from "./deps.ts";
+import { resultFromSync } from "./result-utils.ts";
 import { template } from "./template.ts";
 
 class Config {
@@ -27,11 +28,51 @@ const RunConfigSchema = zod.strictObject({
 export class RunConfig {
   private config?: zod.infer<typeof RunConfigSchema>;
 
-  public async load() {
+  public async load(): Promise<Result<null, Error>> {
     const text = await Deno.readTextFile(Config.runrc);
-    const data = YAML.parse(text);
+    const data = resultFromSync<unknown, Error>(() => YAML.parse(text));
 
-    this.config = RunConfigSchema.parse(data);
+    if (data.isErr) {
+      data.error.message = eformat(
+        `Error parsing ${Config.runrc}: ${data.error.message}`,
+      );
+      return Result.err(data.error);
+    }
+
+    const parsedSchema = RunConfigSchema.safeParse(data.value);
+
+    if (!parsedSchema.success) {
+      const err = zodError.generateErrorMessage(
+        parsedSchema.error.issues,
+        {
+          delimiter: {
+            error: "\n",
+          },
+          path: {
+            enabled: true,
+            label: null,
+            type: "objectNotation",
+          },
+          message: {
+            enabled: true,
+            label: null,
+          },
+          transform({ messageComponent, pathComponent }) {
+            return eformat(
+              `Error parsing ${Config.runrc} at ${
+                pathComponent === "" ? "<root>" : pathComponent
+              }: ${messageComponent}`,
+            );
+          },
+        },
+      );
+
+      return Result.err(new Error(err));
+    }
+
+    this.config = parsedSchema.data;
+
+    return Result.ok(null);
   }
 
   public getConfig() {
@@ -61,7 +102,7 @@ export class RunConfig {
   public async runCommand(alias: string) {
     const command = this.getCommandConfig(alias);
     if (!command) {
-      console.log(chalk.bold.bgRed(` No command found for alias ${alias} `));
+      eprintln(`No command found for alias ${alias} `);
       return 1;
     }
 
@@ -104,6 +145,10 @@ export class RunConfig {
   }
 }
 
-export function error(message: string) {
-  console.log(chalk.bold.bgRed(" ERROR ") + chalk.bold.red(` ${message} `));
+export function eformat(message: string) {
+  return chalk.bold.bgRed(" ERROR ") + chalk.bold.red(` ${message} `);
+}
+
+export function eprintln(message: string) {
+  console.error(eformat(message));
 }
