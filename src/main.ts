@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-fallthrough
 import { chalk } from "./deps.ts";
-import { error, RunConfig } from "./lib.ts";
+import { eprintln, RunConfig } from "./lib.ts";
 
 function usage() {
   console.log(chalk.bold("Usage: ") + chalk.italic("run <alias>"));
@@ -9,13 +9,18 @@ function usage() {
 
 async function main() {
   const config = new RunConfig();
-  await config.load();
+  const loadResult = await config.load();
+
+  if (loadResult.isErr) {
+    console.error(loadResult.error.message);
+    Deno.exit(1);
+  }
 
   const alias = Deno.args.at(0);
 
   if (!alias) {
     // Log usage
-    error("No alias provided");
+    eprintln("No alias provided");
     console.log("");
     usage();
     Deno.exit(1);
