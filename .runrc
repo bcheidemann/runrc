@@ -1,5 +1,26 @@
 commands:
-  - name: Run CLI
-    alias: cli
+  - alias: hello
+    name: Say Hello
+    run: |-
+      NAME=$(echo {1..})
+      if [[ "$NAME" == "" ]]; then
+        echo "No name provided"
+        exit 1
+      fi
+
+      echo "Hello $NAME!"
+  - alias: node-hello
+    name: Say Hello (Node)
+    runner:
+      command: node
+      args:
+        - -e
     run: |
-      deno run --allow-read --allow-run src/main.ts {1..}
+      const NAME = `{1..}`.replaceAll("\"", "");
+
+      if (!NAME) {
+        console.log("No name provided");
+        process.exit(1);
+      }
+
+      console.log(`Hello ${NAME}!`);

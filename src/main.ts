@@ -1,45 +1,34 @@
-// deno-lint-ignore-file no-fallthrough
+import "npm:@total-typescript/ts-reset";
 import { chalk } from "./deps.ts";
-import { eprintln, RunConfig } from "./lib.ts";
+import { parseArgs } from "./cli/args.ts";
+import { DiagnosticsReporter } from "./cli/diagnostics.ts";
+import { toErrorMessage } from "./lib/utils.ts";
+import { HELP_TEXT } from "./lib/help.ts";
 
-function usage() {
-  console.log(chalk.bold("Usage: ") + chalk.italic("run <alias>"));
-  console.log("");
+const parseArgsDiagnostics = new DiagnosticsReporter();
+
+const parseResult = parseArgs(Deno.args, parseArgsDiagnostics);
+
+if (parseArgsDiagnostics.count > 0) {
+  console.error(chalk.bold.underline(`\n${parseArgsDiagnostics.errorsCount} errors, ${parseArgsDiagnostics.warningsCount} warnings\n`));
 }
 
-async function main() {
-  const config = new RunConfig();
-  const loadResult = await config.load();
-
-  if (loadResult.isErr) {
-    console.error(loadResult.error.message);
-    Deno.exit(1);
-  }
-
-  const alias = Deno.args.at(0);
-
-  if (!alias) {
-    // Log usage
-    eprintln("No alias provided");
-    console.log("");
-    usage();
-    Deno.exit(1);
-  }
-
-  switch (alias) {
-    case "--help":
-    case "-h":
-      usage();
-      Deno.exit(0);
-    case "--list-commands":
-    case "-l":
-      config.listCommands();
-      Deno.exit(0);
-  }
-
-  const exitCode = await config.runCommand(alias);
-
-  Deno.exit(exitCode);
+if (parseResult.error) {
+  console.log(HELP_TEXT);
+  console.error(chalk.bold.red("Failed to parse arguments:", toErrorMessage(parseResult.error)));
+  Deno.exit(1);
 }
 
-main();
+const runDiagnostics = new DiagnosticsReporter();
+
+const command = parseResult.value;
+const runResult = await command.run(runDiagnostics);
+
+if (runDiagnostics.count > 0) {
+  console.error(chalk.bold.underline(`\n${runDiagnostics.errorsCount} errors, ${runDiagnostics.warningsCount} warnings\n`));
+}
+
+if (runResult.error) {
+  console.error(chalk.bold.red("Failed to run command:", toErrorMessage(runResult.error)));
+  Deno.exit(1);
+}
