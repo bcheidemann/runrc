@@ -1,8 +1,17 @@
 import { Result } from "../lib/types.ts";
 import { Diagnostic, DiagnosticsReporter } from "./diagnostics.ts";
-import { HelpCommand, ISubCommand, InitCommand, ListCommand, RunCommand } from "./sub_command.ts";
+import {
+  HelpCommand,
+  InitCommand,
+  ISubCommand,
+  ListCommand,
+  RunCommand,
+} from "./sub_command.ts";
 
-export function parseArgs(args: string[], diagnostics: DiagnosticsReporter): Result<ISubCommand, Diagnostic> {
+export function parseArgs(
+  args: string[],
+  diagnostics: DiagnosticsReporter,
+): Result<ISubCommand, Diagnostic> {
   const command = args[0];
 
   switch (command) {
@@ -13,6 +22,6 @@ export function parseArgs(args: string[], diagnostics: DiagnosticsReporter): Res
     case "list":
       return ListCommand.parse(args.slice(1), diagnostics);
     default:
-      return RunCommand.parse(args, diagnostics)
+      return RunCommand.parse(args, diagnostics);
   }
 }

@@ -11,7 +11,10 @@ export interface ISubCommand {
 }
 
 export class HelpCommand implements ISubCommand {
-  public static parse(args: string[], diagnostiscs: DiagnosticsReporter): Result<HelpCommand, Diagnostic> {
+  public static parse(
+    args: string[],
+    diagnostiscs: DiagnosticsReporter,
+  ): Result<HelpCommand, Diagnostic> {
     if (args.length > 0) {
       diagnostiscs.addAndEmit(
         Diagnostic.warning("help command does not take any arguments"),
@@ -21,7 +24,9 @@ export class HelpCommand implements ISubCommand {
     return Ok(new HelpCommand());
   }
 
-  public run(_diagnostics: DiagnosticsReporter): Promise<Result<void, Diagnostic>> {
+  public run(
+    _diagnostics: DiagnosticsReporter,
+  ): Promise<Result<void, Diagnostic>> {
     console.log(HELP_TEXT);
 
     return Promise.resolve(Ok(undefined));
@@ -29,7 +34,10 @@ export class HelpCommand implements ISubCommand {
 }
 
 export class InitCommand implements ISubCommand {
-  public static parse(args: string[], diagnostiscs: DiagnosticsReporter): Result<InitCommand, Diagnostic> {
+  public static parse(
+    args: string[],
+    diagnostiscs: DiagnosticsReporter,
+  ): Result<InitCommand, Diagnostic> {
     if (args.length > 0) {
       diagnostiscs.addAndEmit(
         Diagnostic.warning("init command does not take any arguments"),
@@ -39,13 +47,18 @@ export class InitCommand implements ISubCommand {
     return Ok(new InitCommand());
   }
 
-  public run(diagnostics: DiagnosticsReporter): Promise<Result<void, Diagnostic>> {
+  public run(
+    diagnostics: DiagnosticsReporter,
+  ): Promise<Result<void, Diagnostic>> {
     return init(Deno.cwd(), diagnostics);
   }
 }
 
 export class ListCommand implements ISubCommand {
-  public static parse(args: string[], diagnostiscs: DiagnosticsReporter): Result<ListCommand, Diagnostic> {
+  public static parse(
+    args: string[],
+    diagnostiscs: DiagnosticsReporter,
+  ): Result<ListCommand, Diagnostic> {
     if (args.length > 0) {
       diagnostiscs.addAndEmit(
         Diagnostic.warning("list command does not take any arguments"),
@@ -55,11 +68,12 @@ export class ListCommand implements ISubCommand {
     return Ok(new ListCommand());
   }
 
-  public run(diagnostics: DiagnosticsReporter): Promise<Result<void, Diagnostic>> {
+  public run(
+    diagnostics: DiagnosticsReporter,
+  ): Promise<Result<void, Diagnostic>> {
     return list(diagnostics);
   }
 }
-
 
 export class RunCommand implements ISubCommand {
   constructor(
@@ -67,20 +81,27 @@ export class RunCommand implements ISubCommand {
     public readonly args: string[],
   ) {}
 
-  public static parse(args: string[], diagnostiscs: DiagnosticsReporter): Result<RunCommand, Diagnostic> {
+  public static parse(
+    args: string[],
+    diagnostiscs: DiagnosticsReporter,
+  ): Result<RunCommand, Diagnostic> {
     if (args.length < 1) {
       const error = Diagnostic.error("at least one argument is required");
       diagnostiscs.addAndEmit(error);
       return Err(error);
     }
 
-    return Ok(new RunCommand(
-      args[0],
-      args.slice(1),
-    ));
+    return Ok(
+      new RunCommand(
+        args[0],
+        args.slice(1),
+      ),
+    );
   }
 
-  public run(diagnostics: DiagnosticsReporter): Promise<Result<void, Diagnostic>> {
+  public run(
+    diagnostics: DiagnosticsReporter,
+  ): Promise<Result<void, Diagnostic>> {
     return run(this.alias, this.args, diagnostics);
   }
 }

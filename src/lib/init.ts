@@ -23,7 +23,10 @@ if (!NAME) {
 console.log(\`Hello \${NAME}!\`);
 `;
 
-export async function init(directory: string, diagnostics: DiagnosticsReporter): Promise<Result<void, Diagnostic>> {
+export async function init(
+  directory: string,
+  diagnostics: DiagnosticsReporter,
+): Promise<Result<void, Diagnostic>> {
   const configPath = path.join(directory, ".runrc");
   const statResult = await tryAsync(() => Deno.stat(configPath));
 
@@ -48,10 +51,10 @@ export async function init(directory: string, diagnostics: DiagnosticsReporter):
           args: ["-e"],
         },
         run: NODE_HELLO_COMMAND,
-      }
-    ]
+      },
+    ],
   });
-  
+
   const writeToFileResult = await config.writeToFile(configPath);
 
   if (writeToFileResult.error) {
@@ -62,11 +65,34 @@ export async function init(directory: string, diagnostics: DiagnosticsReporter):
   diagnostics.addAndEmit(
     Diagnostic.info(`Created .runrc file in ${directory}
 
-\t${chalk.bgHex("#005000").bold(`                                                `)}
-\t${chalk.bgHex("#005200").bold(`             ${chalk.bold("RunRC")} is ready to use!             `)}
-\t${chalk.bgHex("#005400").bold(`                                                `)}
-\t${chalk.bgHex("#005600").gray(`    Run ${chalk.white.bold.italic("runrc list")} to see available commands    `)}
-\t${chalk.bgHex("#005900").bold(`                                                `)}`));
+\t${
+      chalk.bgHex("#005000").bold(
+        `                                                `,
+      )
+    }
+\t${
+      chalk.bgHex("#005200").bold(
+        `             ${chalk.bold("RunRC")} is ready to use!             `,
+      )
+    }
+\t${
+      chalk.bgHex("#005400").bold(
+        `                                                `,
+      )
+    }
+\t${
+      chalk.bgHex("#005600").gray(
+        `    Run ${
+          chalk.white.bold.italic("runrc list")
+        } to see available commands    `,
+      )
+    }
+\t${
+      chalk.bgHex("#005900").bold(
+        `                                                `,
+      )
+    }`),
+  );
 
   return Promise.resolve(Ok(undefined));
 }

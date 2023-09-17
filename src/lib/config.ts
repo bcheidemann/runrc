@@ -18,19 +18,21 @@ const CONFIG_SCHEMA = zod.strictObject({
       run: zod.string(),
     }),
   ),
-})
+});
 
 export class Config {
   constructor(
     public options: zod.TypeOf<typeof CONFIG_SCHEMA>,
   ) {}
 
-
-  public static async loadFromFile(path: string): Promise<Result<Config, Diagnostic>> {
+  public static async loadFromFile(
+    path: string,
+  ): Promise<Result<Config, Diagnostic>> {
     const readResult = await tryAsync(
-      () => Deno
-        .readTextFile(path)
-        .then(YAML.parse)
+      () =>
+        Deno
+          .readTextFile(path)
+          .then(YAML.parse),
     );
 
     if (readResult.error) {
@@ -42,7 +44,9 @@ export class Config {
     if (!parseResult.success) {
       return Err(
         Diagnostic.error(
-          zodError.generateErrorMessage(parseResult.error.issues, { prefix: "Invalid config file: " })
+          zodError.generateErrorMessage(parseResult.error.issues, {
+            prefix: "Invalid config file: ",
+          }),
         ),
       );
     }
@@ -52,7 +56,7 @@ export class Config {
 
   public async writeToFile(path: string): Promise<Result<void, Diagnostic>> {
     const writeResult = await tryAsync(
-      () => Deno.writeTextFile(path, YAML.stringify(this.options, null, 2))
+      () => Deno.writeTextFile(path, YAML.stringify(this.options, null, 2)),
     );
 
     if (writeResult.error) {

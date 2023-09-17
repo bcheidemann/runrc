@@ -1,4 +1,3 @@
-
 export type Result<T, E> = {
   error: E;
   value: null;

@@ -1,4 +1,4 @@
-import { chalk } from "../deps.ts"
+import { chalk } from "../deps.ts";
 
 export const HELP_TEXT = `
 ${chalk.bold.underline("Usage:")}

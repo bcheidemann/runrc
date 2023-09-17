@@ -31,7 +31,7 @@ export function toErrorMessage(t: unknown): string {
     case "symbol":
       return t.toString();
     case "bigint":
-        return t.toString();
+      return t.toString();
   }
 }
 
@@ -50,7 +50,9 @@ export function trySync<T>(fn: () => T): Result<T, Diagnostic> {
   }
 }
 
-export async function tryAsync<T>(fn: () => Promise<T>): Promise<Result<T, Diagnostic>> {
+export async function tryAsync<T>(
+  fn: () => Promise<T>,
+): Promise<Result<T, Diagnostic>> {
   try {
     return Ok(await fn());
   } catch (error) {
