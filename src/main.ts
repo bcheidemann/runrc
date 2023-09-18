@@ -1,9 +1,6 @@
 import "npm:@total-typescript/ts-reset";
 import { chalk } from "./deps.ts";
-import { parseArgs } from "./cli/args.ts";
-import { DiagnosticsReporter } from "./cli/diagnostics.ts";
-import { toErrorMessage } from "./lib/utils.ts";
-import { HELP_TEXT } from "./lib/help.ts";
+import { DiagnosticsReporter, HELP_TEXT, parseArgs, toErrorMessage } from "./mod.ts";
 
 const parseArgsDiagnostics = new DiagnosticsReporter();
 
