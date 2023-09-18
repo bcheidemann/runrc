@@ -1,26 +1,10 @@
 commands:
-  - alias: hello
-    name: Say Hello
-    run: |-
-      NAME=$(echo {1..})
-      if [[ "$NAME" == "" ]]; then
-        echo "No name provided"
+  - alias: build
+    name: Build (NPM)
+    run: |
+      if [[ "{1}" == "" ]]; then
+        echo "No version provided"
         exit 1
       fi
 
-      echo "Hello $NAME!"
-  - alias: node-hello
-    name: Say Hello (Node)
-    runner:
-      command: node
-      args:
-        - -e
-    run: |
-      const NAME = `{1..}`.replaceAll("\"", "");
-
-      if (!NAME) {
-        console.log("No name provided");
-        process.exit(1);
-      }
-
-      console.log(`Hello ${NAME}!`);
+      deno run -A scripts/build_npm.ts {1}

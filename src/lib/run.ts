@@ -41,14 +41,19 @@ export async function run(
 
   const script = template({ args: [alias, ...args] })(command.run);
 
-  const cmd = new Deno.Command(
-    runner.command,
-    {
-      args: [...runner.args, script],
-    },
-  );
+  // deno-lint-ignore no-deprecated-deno-api -- TODO: Replace with Deno.Command when supported by dnt
+  const status = await Deno.run({
+    cmd: [runner.command, ...runner.args, script],
+  }).status();
 
-  const status = await cmd.spawn().status;
+  // const cmd = new Deno.Command(
+  //   runner.command,
+  //   {
+  //     args: [...runner.args, script],
+  //   },
+  // );
+
+  // const status = await cmd.spawn().status;
 
   if (!status.success) {
     Deno.exit(status.code);

@@ -1,11 +1,19 @@
 # RunRC
 
-Configurable per-directory command aliases and scripts
+Configurable per-directory command aliases and scripts.
 
 ## Installation
 
+### Deno
+
 ```sh
 deno install -A -n runrc -f https://deno.land/x/runrc/src/main.ts
+```
+
+### NPM
+
+```sh
+npm install -g runrc
 ```
 
 ## Usage
