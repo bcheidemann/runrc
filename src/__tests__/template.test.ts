@@ -1,4 +1,4 @@
-import { template } from "../template.ts";
+import { template } from "../lib/template.ts";
 import { asserts, bdd } from "./deps.ts";
 
 const { describe, it } = bdd;

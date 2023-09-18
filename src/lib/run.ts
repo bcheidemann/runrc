@@ -1,6 +1,6 @@
 import { Diagnostic, DiagnosticsReporter } from "../cli/diagnostics.ts";
 import { chalk, path } from "../deps.ts";
-import { template } from "../template.ts";
+import { template } from "./template.ts";
 import { Config } from "./config.ts";
 import { Err } from "./result.ts";
 import { Result } from "./types.ts";
